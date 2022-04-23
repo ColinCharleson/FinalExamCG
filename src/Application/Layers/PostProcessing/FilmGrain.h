@@ -5,19 +5,19 @@
 #include "Graphics/Textures/Texture3D.h"
 #include "Graphics/Framebuffer.h"
 
-class FilmGrain : public PostProcessingLayer::Effect {
+class filmGrain : public PostProcessingLayer::Effect {
 public:
-	MAKE_PTRS(FilmGrain);
+	MAKE_PTRS(filmGrain);
 
-	FilmGrain();
-	virtual ~FilmGrain();
+	filmGrain();
+	virtual ~filmGrain();
 
 	virtual void Apply(const Framebuffer::Sptr& gBuffer) override;
 	virtual void RenderImGui() override;
 
 	// Inherited from IResource
 
-	FilmGrain::Sptr FromJson(const nlohmann::json& data);
+	filmGrain::Sptr FromJson(const nlohmann::json& data);
 	virtual nlohmann::json ToJson() const override;
 
 protected:

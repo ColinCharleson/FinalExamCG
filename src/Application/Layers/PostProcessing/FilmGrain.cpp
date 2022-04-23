@@ -5,7 +5,7 @@
 #include "../RenderLayer.h"
 #include "Application/Application.h"
 
-FilmGrain::FilmGrain() :
+filmGrain::filmGrain() :
 	PostProcessingLayer::Effect(),
 	_shader(nullptr)
 {
@@ -14,37 +14,30 @@ FilmGrain::FilmGrain() :
 
 	_shader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 		{ ShaderPartType::Vertex, "shaders/vertex_shaders/fullscreen_quad.glsl" },
-		{ ShaderPartType::Fragment, "shaders/fragment_shaders/post_effects/FilmGrain.glsl" }
+		{ ShaderPartType::Fragment, "shaders/fragment_shaders/post_effects/Film_Grain.glsl" }
 	});
 }
 
-FilmGrain::~FilmGrain() = default;
+filmGrain::~filmGrain() = default;
 
-void FilmGrain::Apply(const Framebuffer::Sptr& gBuffer)
+void filmGrain::Apply(const Framebuffer::Sptr & gBuffer)
 {
 	_shader->Bind();
 	gBuffer->BindAttachment(RenderTargetAttachment::Depth, 1);
 }
 
-void FilmGrain::RenderImGui()
+void filmGrain::RenderImGui()
 {
-	const auto& cam = Application::Get().CurrentScene()->MainCamera;
-
-	if (cam != nullptr) {
-		ImGui::DragFloat("Focal Depth", &cam->FocalDepth, 0.1f, 0.1f, 100.0f);
-		ImGui::DragFloat("Lens Dist. ", &cam->LensDepth,  0.01f, 0.001f, 50.0f);
-		ImGui::DragFloat("Aperture   ", &cam->Aperture,   0.1f, 0.1f, 60.0f);
-	}
 }
 
-FilmGrain::Sptr FilmGrain::FromJson(const nlohmann::json& data)
+filmGrain::Sptr filmGrain::FromJson(const nlohmann::json & data)
 {
-	FilmGrain::Sptr result = std::make_shared<FilmGrain>();
+	filmGrain::Sptr result = std::make_shared<filmGrain>();
 	result->Enabled = JsonGet(data, "enabled", true);
 	return result;
 }
 
-nlohmann::json FilmGrain::ToJson() const
+nlohmann::json filmGrain::ToJson() const
 {
 	return {
 		{ "enabled", Enabled }
