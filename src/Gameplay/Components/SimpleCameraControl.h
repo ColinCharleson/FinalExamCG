@@ -22,6 +22,7 @@ public:
 	MAKE_TYPENAME(SimpleCameraControl);
 	virtual nlohmann::json ToJson() const override;
 	static SimpleCameraControl::Sptr FromJson(const nlohmann::json& blob);
+	bool canMove = true;
 
 protected:
 	float _shiftMultipler;
@@ -31,6 +32,7 @@ protected:
 	glm::vec2 _currentRot;
 
 	bool _isMousePressed = false;
+	
 
 	float _impulse;
 

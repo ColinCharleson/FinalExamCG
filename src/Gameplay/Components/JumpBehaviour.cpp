@@ -5,6 +5,8 @@
 #include "Utils/ImGuiHelper.h"
 #include "Gameplay/InputEngine.h"
 
+#include "Gameplay/Components/SimpleCameraControl.h"
+
 void JumpBehaviour::Awake()
 {
 	_body = GetComponent<Gameplay::Physics::RigidBody>();
@@ -37,7 +39,7 @@ JumpBehaviour::Sptr JumpBehaviour::FromJson(const nlohmann::json& blob) {
 }
 
 void JumpBehaviour::Update(float deltaTime) {
-	if (InputEngine::GetKeyState(GLFW_KEY_SPACE) == ButtonState::Pressed) {
+	if (InputEngine::GetKeyState(GLFW_KEY_SPACE) == ButtonState::Pressed && GetGameObject()->Get<SimpleCameraControl>()->canMove) {
 		if (GetGameObject()->GetPosition().z <= 1.5)
 		{
 			_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, _impulse));

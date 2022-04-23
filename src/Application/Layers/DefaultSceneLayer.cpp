@@ -146,6 +146,8 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/box-diffuse.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
 		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/monkey-uvMap.png");
+		Texture2D::Sptr    youWinTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouWin.png");
+		Texture2D::Sptr    youLoseTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouLose.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
 		leafTex->SetMinFilter(MinFilter::Nearest);
 		leafTex->SetMagFilter(MagFilter::Nearest);
@@ -459,6 +461,20 @@ void DefaultSceneLayer::_CreateScene()
 			canvas->AddChild(subPanel);
 		}
 		
+		GameObject::Sptr youWin = scene->CreateGameObject("You Win Text");
+		{
+			RectTransform::Sptr transform = youWin->Add<RectTransform>();
+			transform->SetPosition({ 0, 0 });
+			transform->SetMin({ 192, 108 });
+			transform->SetMax({ 1920, 1080 });
+
+			GuiPanel::Sptr panel = youWin->Add<GuiPanel>();
+			panel->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			panel->SetTexture(youWinTex);
+
+			panel->IsEnabled = false;
+
+		}
 
 		GameObject::Sptr particles = scene->CreateGameObject("Particles"); 
 		{

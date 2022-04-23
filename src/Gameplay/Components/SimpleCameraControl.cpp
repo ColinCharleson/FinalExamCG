@@ -9,6 +9,7 @@
 #include "Utils/ImGuiHelper.h"
 #include "Gameplay/InputEngine.h"
 #include "Application/Application.h"
+#include "Gameplay/Components/GUI/GuiPanel.h"
 
 SimpleCameraControl::SimpleCameraControl() :
 	IComponent(),
@@ -25,13 +26,18 @@ SimpleCameraControl::~SimpleCameraControl() = default;
 void SimpleCameraControl::Update(float deltaTime)
 {
 	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 180.0f));
-	if (InputEngine::IsKeyDown(GLFW_KEY_A))
+	if (InputEngine::IsKeyDown(GLFW_KEY_A) && canMove)
 	{
 		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x - 2 * deltaTime),6, GetGameObject()->GetPosition().z));
 	}
-	if (InputEngine::IsKeyDown(GLFW_KEY_D))
+	if (InputEngine::IsKeyDown(GLFW_KEY_D) && canMove)
 	{
 		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x + 2 * deltaTime), 6, GetGameObject()->GetPosition().z));
+	}
+
+	if (GetGameObject()->GetPosition().x > 12) {
+		canMove = false;
+		GetGameObject()->GetScene()->FindObjectByName("You Win Text")->Get<GuiPanel>()->IsEnabled = true;
 	}
 }
 
