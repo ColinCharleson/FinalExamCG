@@ -45,6 +45,7 @@
 #include "Gameplay/Components/Camera.h"
 #include "Gameplay/Components/RotatingBehaviour.h"
 #include "Gameplay/Components/JumpBehaviour.h"
+#include "Gameplay/Components/EnemyControl.h"
 #include "Gameplay/Components/RenderComponent.h"
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
@@ -356,8 +357,8 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			camera->SetPostion({ 0.0f, 0.0f, 3.0f});
 			camera->SetRotation({ 70.0f,0.0f, 0.0f });
-		}
 
+		} 
 
 		// Set up all our sample objects
 		GameObject::Sptr plane = scene->CreateGameObject("Plane");
@@ -377,23 +378,41 @@ void DefaultSceneLayer::_CreateScene()
 			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
 		}
 
-		GameObject::Sptr monkey1 = scene->CreateGameObject("Monkey 1");
+		GameObject::Sptr player = scene->CreateGameObject("Player");
 		{
 			// Set position in the scene
-			monkey1->SetPostion(glm::vec3(-10.0f, 6.0f, 1.0f));
-			monkey1->SetRotation(glm::vec3(0.0f, 0.0f, 180.0f));
+			player->SetPostion(glm::vec3(-10.0f, 6.0f, 1.0f));
+			player->SetRotation(glm::vec3(0.0f, 0.0f, 180.0f));
 
 			// Create and attach a renderer for the monkey
-			RenderComponent::Sptr renderer = monkey1->Add<RenderComponent>();
+			RenderComponent::Sptr renderer = player->Add<RenderComponent>();
 			renderer->SetMesh(monkeyMesh);
 			renderer->SetMaterial(monkeyMaterial);
 
-			RigidBody::Sptr physics = monkey1->Add<RigidBody>(RigidBodyType::Dynamic);
+			RigidBody::Sptr physics = player->Add<RigidBody>(RigidBodyType::Dynamic);
 			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
 
 			// Add some behaviour that relies on the physics body
-			monkey1->Add<SimpleCameraControl>();
-			monkey1->Add<JumpBehaviour>();
+			player->Add<SimpleCameraControl>();
+			player->Add<JumpBehaviour>();
+		}
+		
+		GameObject::Sptr enemy = scene->CreateGameObject("Enemy");
+		{
+			// Set position in the scene
+			enemy->SetPostion(glm::vec3(5.0f, 6.0f, 1.0f));
+			enemy->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+
+			// Create and attach a renderer for the monkey
+			RenderComponent::Sptr renderer = enemy->Add<RenderComponent>();
+			renderer->SetMesh(monkeyMesh);
+			renderer->SetMaterial(monkeyMaterial);
+
+			RigidBody::Sptr physics = enemy->Add<RigidBody>(RigidBodyType::Dynamic);
+			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+
+			// Add some behaviour that relies on the physics body
+			enemy->Add<EnemyControl>();
 		}
 
 		GameObject::Sptr shadowCaster = scene->CreateGameObject("Shadow Light");

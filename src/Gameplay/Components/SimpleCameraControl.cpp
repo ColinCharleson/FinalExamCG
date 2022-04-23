@@ -24,15 +24,14 @@ SimpleCameraControl::~SimpleCameraControl() = default;
 
 void SimpleCameraControl::Update(float deltaTime)
 {
+	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 180.0f));
 	if (InputEngine::IsKeyDown(GLFW_KEY_A))
 	{
-		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x - 2 * deltaTime),
-			GetGameObject()->GetPosition().y, GetGameObject()->GetPosition().z));
+		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x - 2 * deltaTime),6, GetGameObject()->GetPosition().z));
 	}
 	if (InputEngine::IsKeyDown(GLFW_KEY_D))
 	{
-		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x + 2 * deltaTime),
-			GetGameObject()->GetPosition().y, GetGameObject()->GetPosition().z));
+		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x + 2 * deltaTime), 6, GetGameObject()->GetPosition().z));
 	}
 }
 
