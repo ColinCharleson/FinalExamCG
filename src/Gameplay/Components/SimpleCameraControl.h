@@ -1,5 +1,6 @@
 #pragma once
 #include "IComponent.h"
+#include "Gameplay/Physics/RigidBody.h"
 
 struct GLFWwindow;
 
@@ -30,4 +31,9 @@ protected:
 	glm::vec2 _currentRot;
 
 	bool _isMousePressed = false;
+
+	float _impulse;
+
+	bool _isPressed = false;
+	Gameplay::Physics::RigidBody::Sptr _body;
 };
