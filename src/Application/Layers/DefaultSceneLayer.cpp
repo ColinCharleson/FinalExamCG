@@ -139,13 +139,14 @@ void DefaultSceneLayer::_CreateScene()
 
 
 		// Load in the meshes
-		MeshResource::Sptr monkeyMesh = ResourceManager::CreateAsset<MeshResource>("character.obj");
+		MeshResource::Sptr humanMesh = ResourceManager::CreateAsset<MeshResource>("character.obj");
 		MeshResource::Sptr shipMesh   = ResourceManager::CreateAsset<MeshResource>("fenrir.obj");
 
 		// Load in some textures
 		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/BrickTexture.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
-		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/playerTexture.png");
+		Texture2D::Sptr    playerTex    = ResourceManager::CreateAsset<Texture2D>("textures/playerTexture.png");
+		Texture2D::Sptr    enemyTex    = ResourceManager::CreateAsset<Texture2D>("textures/enemyTexture.png");
 		Texture2D::Sptr    youWinTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouWin.png");
 		Texture2D::Sptr    youLoseTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouLose.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
@@ -224,12 +225,19 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		// This will be the reflective material, we'll make the whole thing 90% reflective
-		Material::Sptr monkeyMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		Material::Sptr playerMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
-			monkeyMaterial->Name = "Monkey";
-			monkeyMaterial->Set("u_Material.AlbedoMap", monkeyTex);
-			monkeyMaterial->Set("u_Material.NormalMap", normalMapDefault);
-			monkeyMaterial->Set("u_Material.Shininess", 0.5f);
+			playerMaterial->Name = "Player Mat";
+			playerMaterial->Set("u_Material.AlbedoMap", playerTex);
+			playerMaterial->Set("u_Material.NormalMap", normalMapDefault);
+			playerMaterial->Set("u_Material.Shininess", 0.5f);
+		}
+		Material::Sptr enemyMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		{
+			enemyMaterial->Name = "Enemy Mat";
+			enemyMaterial->Set("u_Material.AlbedoMap", enemyTex);
+			enemyMaterial->Set("u_Material.NormalMap", normalMapDefault);
+			enemyMaterial->Set("u_Material.Shininess", 0.5f);
 		}
 
 		// This will be the reflective material, we'll make the whole thing 50% reflective
@@ -409,8 +417,8 @@ void DefaultSceneLayer::_CreateScene()
 
 			// Create and attach a renderer for the monkey
 			RenderComponent::Sptr renderer = player->Add<RenderComponent>();
-			renderer->SetMesh(monkeyMesh);
-			renderer->SetMaterial(monkeyMaterial);
+			renderer->SetMesh(humanMesh);
+			renderer->SetMaterial(playerMaterial);
 
 			RigidBody::Sptr physics = player->Add<RigidBody>(RigidBodyType::Dynamic);
 			physics->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
@@ -434,8 +442,8 @@ void DefaultSceneLayer::_CreateScene()
 
 			// Create and attach a renderer for the monkey
 			RenderComponent::Sptr renderer = enemy->Add<RenderComponent>();
-			renderer->SetMesh(monkeyMesh);
-			renderer->SetMaterial(monkeyMaterial);
+			renderer->SetMesh(humanMesh);
+			renderer->SetMaterial(enemyMaterial);
 
 			TriggerVolume::Sptr triggerVolume = enemy->Add<TriggerVolume>();
 			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
