@@ -229,6 +229,7 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			playerMaterial->Name = "Player Mat";
 			playerMaterial->Set("u_Material.AlbedoMap", playerTex);
+			playerMaterial->Set("u_Material.EmissiveMap", playerTex);
 			playerMaterial->Set("u_Material.NormalMap", normalMapDefault);
 			playerMaterial->Set("u_Material.Shininess", 0.5f);
 		}
@@ -236,6 +237,7 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			enemyMaterial->Name = "Enemy Mat";
 			enemyMaterial->Set("u_Material.AlbedoMap", enemyTex);
+			enemyMaterial->Set("u_Material.EmissiveMap", enemyTex);
 			enemyMaterial->Set("u_Material.NormalMap", normalMapDefault);
 			enemyMaterial->Set("u_Material.Shininess", 0.5f);
 		}
