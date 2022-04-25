@@ -382,6 +382,25 @@ void DefaultSceneLayer::_CreateScene()
 			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
 		}
 
+		GameObject::Sptr box = scene->CreateGameObject("Box");
+		{
+			MeshResource::Sptr boxMesh = ResourceManager::CreateAsset<MeshResource>();
+			boxMesh->AddParam(MeshBuilderParam::CreateCube(ZERO, ONE));
+			boxMesh->GenerateMesh();
+
+			// Set and rotation position in the scene
+			box->SetPostion(glm::vec3(1.0f, 6.0f, 1.0f));
+			box->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
+
+			RigidBody::Sptr physics = box->Add<RigidBody>();
+			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+
+			// Add a render component
+			RenderComponent::Sptr renderer = box->Add<RenderComponent>();
+			renderer->SetMesh(boxMesh);
+			renderer->SetMaterial(boxMaterial);
+		}
+
 		GameObject::Sptr player = scene->CreateGameObject("Player");
 		{
 			// Set position in the scene
@@ -394,10 +413,10 @@ void DefaultSceneLayer::_CreateScene()
 			renderer->SetMaterial(monkeyMaterial);
 
 			RigidBody::Sptr physics = player->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			physics->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
 
 			TriggerVolume::Sptr triggerVolume = player->Add<TriggerVolume>();
-			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
 			triggerVolume->SetFlags(TriggerTypeFlags::Dynamics);
 
 			// Add some behaviour that relies on the physics body
@@ -419,11 +438,11 @@ void DefaultSceneLayer::_CreateScene()
 			renderer->SetMaterial(monkeyMaterial);
 
 			TriggerVolume::Sptr triggerVolume = enemy->Add<TriggerVolume>();
-			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
 			triggerVolume->SetFlags(TriggerTypeFlags::Dynamics);
 
 			RigidBody::Sptr physics = enemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			physics->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
 
 			// Add some behaviour that relies on the physics body
 			enemy->Add<EnemyControl>();
