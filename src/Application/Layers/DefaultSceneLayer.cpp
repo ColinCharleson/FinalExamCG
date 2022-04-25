@@ -371,7 +371,6 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			camera->SetPostion({ 0.0f, 0.0f, 3.0f});
 			camera->SetRotation({ 70.0f,0.0f, 0.0f });
-
 		} 
 
 		GameObject::Sptr resetWall = scene->CreateGameObject("resetWall");
@@ -381,11 +380,11 @@ void DefaultSceneLayer::_CreateScene()
 			boxMesh->GenerateMesh();
 
 			// Set and rotation position in the scene
-			resetWall->SetPostion(glm::vec3(1.0f, 6.0f, 1.0f));
-			resetWall->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
+			resetWall->SetPostion(glm::vec3(-15.0f, 6.0f, 1.0f));
+			resetWall->SetScale(glm::vec3(2.0f, 2.0f, 200.0f));
 
 			RigidBody::Sptr physics = resetWall->Add<RigidBody>();
-			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 200.0f)))->SetPosition({ 0,0,0 });
 
 			// Add a render component
 			RenderComponent::Sptr renderer = resetWall->Add<RenderComponent>();

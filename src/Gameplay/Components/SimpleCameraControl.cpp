@@ -39,13 +39,6 @@ void SimpleCameraControl::Update(float deltaTime)
 	{
 		GetGameObject()->SetPostion(glm::vec3((GetGameObject()->GetPosition().x + 2 * deltaTime), 6, GetGameObject()->GetPosition().z));
 	}
-
-	if (GetGameObject()->GetPosition().x > 12) {
-		canMove = false;
-		GetGameObject()->GetScene()->FindObjectByName("You Win Text")->Get<GuiPanel>()->IsEnabled = true;
-	}
-
-	
 }
 
 
