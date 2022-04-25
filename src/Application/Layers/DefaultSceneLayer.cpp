@@ -143,14 +143,16 @@ void DefaultSceneLayer::_CreateScene()
 		MeshResource::Sptr shipMesh   = ResourceManager::CreateAsset<MeshResource>("fenrir.obj");
 
 		// Load in some textures
-		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/box-diffuse.png");
+		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/BrickTexture.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
 		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/monkey-uvMap.png");
 		Texture2D::Sptr    youWinTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouWin.png");
 		Texture2D::Sptr    youLoseTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouLose.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
+		//Texture2D::Sptr    brick = ResourceManager::CreateAsset<Texture2D>("textures/BrickTexture.png");
 		leafTex->SetMinFilter(MinFilter::Nearest);
 		leafTex->SetMagFilter(MagFilter::Nearest);
+
 
 		// Load some images for drag n' drop
 		ResourceManager::CreateAsset<Texture2D>("textures/flashlight.png");
