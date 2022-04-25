@@ -38,10 +38,15 @@ JumpBehaviour::Sptr JumpBehaviour::FromJson(const nlohmann::json& blob) {
 	return result;
 }
 
+float jumpCooldown;
 void JumpBehaviour::Update(float deltaTime) {
+	if(jumpCooldown > 0)
+		jumpCooldown -= 1 * deltaTime;
+
 	if (InputEngine::GetKeyState(GLFW_KEY_SPACE) == ButtonState::Pressed && GetGameObject()->Get<SimpleCameraControl>()->canMove) {
-		if (GetGameObject()->GetPosition().z <= 1.5)
+		if (jumpCooldown <= 0)
 		{
+			jumpCooldown = 1.8f;
 			_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, _impulse));
 			Gameplay::IComponent::Sptr ptr = Panel.lock();
 			if (ptr != nullptr)

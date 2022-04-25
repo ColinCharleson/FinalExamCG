@@ -69,8 +69,15 @@ void EnemyControl::OnTriggerVolumeEntered(const std::shared_ptr<RigidBody> & bod
 	_CollideName = body->GetGameObject()->Name;
 
 	if (_CollideName == "Player") {
-		GetGameObject()->GetScene()->FindObjectByName("Player")->Get<SimpleCameraControl>()->canMove = false;
-		GetGameObject()->GetScene()->FindObjectByName("You Lose Text")->Get<GuiPanel>()->IsEnabled = true;
+		if (GetGameObject()->GetScene()->FindObjectByName("Player")->GetPosition().z <= 2.8f)
+		{
+			GetGameObject()->GetScene()->FindObjectByName("Player")->Get<SimpleCameraControl>()->canMove = false;
+			GetGameObject()->GetScene()->FindObjectByName("You Lose Text")->Get<GuiPanel>()->IsEnabled = true;
+		}
+		else
+		{
+			GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		}
 	}
 
 }

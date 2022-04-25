@@ -442,7 +442,7 @@ void DefaultSceneLayer::_CreateScene()
 
 		/////////////////////////// UI //////////////////////////////
 		
-		GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas"); 
+		/*GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas"); 
 		{
 			RectTransform::Sptr transform = canvas->Add<RectTransform>();
 			transform->SetMin({ 16, 16 });
@@ -471,7 +471,7 @@ void DefaultSceneLayer::_CreateScene()
 			}
 
 			canvas->AddChild(subPanel);
-		}
+		}*/
 		
 		GameObject::Sptr youWin = scene->CreateGameObject("You Win Text");
 		{
