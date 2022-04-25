@@ -34,7 +34,7 @@ public:
 	virtual nlohmann::json ToJson() const override;
 	static EnemyControl::Sptr FromJson(const nlohmann::json& blob);
 	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& trigger);
-	float m_segmentTravelTime = 8.0f;
+	float m_segmentTravelTime = 3.0f;
 	bool canMove = true;
 
 private:
@@ -43,8 +43,8 @@ private:
 protected:
 	float _impulse;
 	float _timer = 0.0f;
-	std::string _CollideName;
 
 	float _playbackSpeed;
+	std::string _CollideName;
 };
 

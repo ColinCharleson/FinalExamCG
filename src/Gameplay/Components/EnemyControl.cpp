@@ -49,37 +49,12 @@ EnemyControl::Sptr EnemyControl::FromJson(const nlohmann::json& blob)
 	return result;
 }
 
-extern float playerX, playerY;
-extern int ammoCount, playerHealth, bandageCount;
-
 EnemyControl::~EnemyControl() = default;
 
 template<typename T>
 T Lerp(const T & a, const T & b, float t)
 {
 	return (1.0f - t) * a + t * b;
-}
-
-void EnemyControl::OnTriggerVolumeEntered(const std::shared_ptr<RigidBody> & body) {
-
-
-	if (body->GetGameObject()->GetParent()) {
-		_CollideName = body->GetGameObject()->GetParent()->Name;
-	}
-	_CollideName = body->GetGameObject()->Name;
-
-	if (_CollideName == "Player") {
-		if (GetGameObject()->GetScene()->FindObjectByName("Player")->GetPosition().z <= 2.8f)
-		{
-			GetGameObject()->GetScene()->FindObjectByName("Player")->Get<SimpleCameraControl>()->canMove = false;
-			GetGameObject()->GetScene()->FindObjectByName("You Lose Text")->Get<GuiPanel>()->IsEnabled = true;
-		}
-		else
-		{
-			GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
-		}
-	}
-
 }
 
 void EnemyControl::Update(float deltaTime)
@@ -105,7 +80,30 @@ void EnemyControl::Update(float deltaTime)
 	glm::vec3 a = _points[((m_segmentIndex - 1) + _points.size()) % _points.size()];
 	glm::vec3 b = _points[((m_segmentIndex)+_points.size()) % _points.size()];
 
+	GetGameObject()->SetPostion(Lerp(a, b, t));
 }
 
+void EnemyControl::OnTriggerVolumeEntered(const std::shared_ptr<RigidBody>& body)
+{
+
+	if (body->GetGameObject()->GetParent())
+	{
+		_CollideName = body->GetGameObject()->GetParent()->Name;
+	}
+	_CollideName = body->GetGameObject()->Name;
+
+	if (_CollideName == "Player")
+	{
+		if (GetGameObject()->GetScene()->FindObjectByName("Player")->GetPosition().z <= 2.8f)
+		{
+			GetGameObject()->GetScene()->FindObjectByName("Player")->Get<SimpleCameraControl>()->canMove = false;
+			GetGameObject()->GetScene()->FindObjectByName("You Lose Text")->Get<GuiPanel>()->IsEnabled = true;
+		}
+		else
+		{
+			GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		}
+	}
+}
 
 
