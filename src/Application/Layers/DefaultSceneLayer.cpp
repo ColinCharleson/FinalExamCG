@@ -45,7 +45,7 @@
 #include "Gameplay/Components/Camera.h"
 #include "Gameplay/Components/RotatingBehaviour.h"
 #include "Gameplay/Components/JumpBehaviour.h"
-#include "Gameplay/Components/EnemyControl.h"
+#include "Gameplay/Components/EnemyBullet.h"
 #include "Gameplay/Components/RenderComponent.h"
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
@@ -374,6 +374,25 @@ void DefaultSceneLayer::_CreateScene()
 
 		} 
 
+		GameObject::Sptr resetWall = scene->CreateGameObject("resetWall");
+		{
+			MeshResource::Sptr boxMesh = ResourceManager::CreateAsset<MeshResource>();
+			boxMesh->AddParam(MeshBuilderParam::CreateCube(ZERO, ONE));
+			boxMesh->GenerateMesh();
+
+			// Set and rotation position in the scene
+			resetWall->SetPostion(glm::vec3(1.0f, 6.0f, 1.0f));
+			resetWall->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
+
+			RigidBody::Sptr physics = resetWall->Add<RigidBody>();
+			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+
+			// Add a render component
+			RenderComponent::Sptr renderer = resetWall->Add<RenderComponent>();
+			renderer->SetMesh(boxMesh);
+			renderer->SetMaterial(boxMaterial);
+		}
+
 		// Set up all our sample objects
 		GameObject::Sptr plane = scene->CreateGameObject("Plane");
 		{
@@ -390,25 +409,6 @@ void DefaultSceneLayer::_CreateScene()
 			// Attach a plane collider that extends infinitely along the X/Y axis
 			RigidBody::Sptr physics = plane->Add<RigidBody>(/*static by default*/);
 			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
-		}
-
-		GameObject::Sptr box = scene->CreateGameObject("Box");
-		{
-			MeshResource::Sptr boxMesh = ResourceManager::CreateAsset<MeshResource>();
-			boxMesh->AddParam(MeshBuilderParam::CreateCube(ZERO, ONE));
-			boxMesh->GenerateMesh();
-
-			// Set and rotation position in the scene
-			box->SetPostion(glm::vec3(1.0f, 6.0f, 1.0f));
-			box->SetScale(glm::vec3(2.0f, 2.0f, 2.0f));
-
-			RigidBody::Sptr physics = box->Add<RigidBody>();
-			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
-
-			// Add a render component
-			RenderComponent::Sptr renderer = box->Add<RenderComponent>();
-			renderer->SetMesh(boxMesh);
-			renderer->SetMaterial(boxMaterial);
 		}
 
 		GameObject::Sptr player = scene->CreateGameObject("Player");
@@ -439,7 +439,7 @@ void DefaultSceneLayer::_CreateScene()
 		GameObject::Sptr enemy = scene->CreateGameObject("Enemy");
 		{
 			// Set position in the scene
-			enemy->SetPostion(glm::vec3(5.0f, 6.0f, 1.0f));
+			enemy->SetPostion(glm::vec3(8.0f, 6.0f, 5.0f));
 			enemy->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 
 			// Create and attach a renderer for the monkey
@@ -451,11 +451,8 @@ void DefaultSceneLayer::_CreateScene()
 			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
 			triggerVolume->SetFlags(TriggerTypeFlags::Dynamics);
 
-			RigidBody::Sptr physics = enemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
-
 			// Add some behaviour that relies on the physics body
-			enemy->Add<EnemyControl>();
+			enemy->Add<EnemyBullet>();
 		}
 
 		GameObject::Sptr shadowCaster = scene->CreateGameObject("Shadow Light");
@@ -470,37 +467,6 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		/////////////////////////// UI //////////////////////////////
-		
-		/*GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas"); 
-		{
-			RectTransform::Sptr transform = canvas->Add<RectTransform>();
-			transform->SetMin({ 16, 16 });
-			transform->SetMax({ 128, 128 });
-
-			GuiPanel::Sptr canPanel = canvas->Add<GuiPanel>();
-
-
-			GameObject::Sptr subPanel = scene->CreateGameObject("Sub Item");
-			{
-				RectTransform::Sptr transform = subPanel->Add<RectTransform>();
-				transform->SetMin({ 10, 10 });
-				transform->SetMax({ 64, 64 });
-
-				GuiPanel::Sptr panel = subPanel->Add<GuiPanel>();
-				panel->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-
-				panel->SetTexture(ResourceManager::CreateAsset<Texture2D>("textures/upArrow.png"));
-
-				Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Roboto-Medium.ttf", 16.0f);
-				font->Bake();
-
-				GuiText::Sptr text = subPanel->Add<GuiText>();
-				text->SetText("Hello world!");
-				text->SetFont(font);
-			}
-
-			canvas->AddChild(subPanel);
-		}*/
 		
 		GameObject::Sptr youWin = scene->CreateGameObject("You Win Text");
 		{
@@ -531,12 +497,9 @@ void DefaultSceneLayer::_CreateScene()
 			panel->IsEnabled = false;
 
 		}
-
-		GameObject::Sptr particles = scene->CreateGameObject("Particles"); 
-		{
-			particles->SetPostion({ -2.0f, 0.0f, 2.0f });
-
-			ParticleSystem::Sptr particleManager = particles->Add<ParticleSystem>();  
+		
+		{	// Players smoke particle
+			ParticleSystem::Sptr particleManager = player->Add<ParticleSystem>();
 			particleManager->Atlas = particleTex;
 
 			ParticleSystem::ParticleData emitter;
@@ -553,6 +516,25 @@ void DefaultSceneLayer::_CreateScene()
 
 			particleManager->AddEmitter(emitter);
 		}
+		{	// Enemy smoke particle
+			ParticleSystem::Sptr particleManager = enemy->Add<ParticleSystem>();
+			particleManager->Atlas = particleTex;
+
+			ParticleSystem::ParticleData emitter;
+			emitter.Type = ParticleType::SphereEmitter;
+			emitter.TexID = 2;
+			emitter.Position = glm::vec3(0.0f);
+			emitter.Color = glm::vec4(0.8f, 0.2f, 0.2f, 1.0f);
+			emitter.Lifetime = 0.0f;
+			emitter.SphereEmitterData.Timer = 1.0f / 50.0f;
+			emitter.SphereEmitterData.Velocity = 0.5f;
+			emitter.SphereEmitterData.LifeRange = { 1.0f, 4.0f };
+			emitter.SphereEmitterData.Radius = 1.0f;
+			emitter.SphereEmitterData.SizeRange = { 0.5f, 1.5f };
+
+			particleManager->AddEmitter(emitter);
+		}
+		
 
 		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("textures/ui-sprite.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);

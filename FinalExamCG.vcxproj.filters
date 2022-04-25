@@ -132,6 +132,9 @@
     <ClInclude Include="src\Gameplay\Components\ComponentManager.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Gameplay\Components\EnemyBullet.h">
+      <Filter>Gameplay\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Gameplay\Components\EnemyControl.h">
       <Filter>Gameplay\Components</Filter>
     </ClInclude>
@@ -417,6 +420,9 @@
       <Filter>Application\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Gameplay\Components\Camera.cpp">
+      <Filter>Gameplay\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Components\EnemyBullet.cpp">
       <Filter>Gameplay\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Gameplay\Components\EnemyControl.cpp">
