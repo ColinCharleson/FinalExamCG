@@ -139,13 +139,13 @@ void DefaultSceneLayer::_CreateScene()
 
 
 		// Load in the meshes
-		MeshResource::Sptr monkeyMesh = ResourceManager::CreateAsset<MeshResource>("Monkey.obj");
+		MeshResource::Sptr monkeyMesh = ResourceManager::CreateAsset<MeshResource>("character.obj");
 		MeshResource::Sptr shipMesh   = ResourceManager::CreateAsset<MeshResource>("fenrir.obj");
 
 		// Load in some textures
 		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/BrickTexture.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
-		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/monkey-uvMap.png");
+		Texture2D::Sptr    monkeyTex    = ResourceManager::CreateAsset<Texture2D>("textures/playerTexture.png");
 		Texture2D::Sptr    youWinTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouWin.png");
 		Texture2D::Sptr    youLoseTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouLose.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
