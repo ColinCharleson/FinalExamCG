@@ -7,14 +7,20 @@
 #include <GLFW/glfw3.h>
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
-#include "Gameplay/Physics/RigidBody.h"
 #include "Utils/ImGuiHelper.h"
+#include "Gameplay/Components/SimpleCameraControl.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 
 #include "Gameplay/Components/EnemyControl.h"
+#include "Gameplay/Physics/RigidBody.h"
 #include "NOU/Mesh.h"
 #include "NOU/CCamera.h"
 #include "Gameplay/Material.h"
+#include "Utils/TypeHelpers.h"
+
+#include "Gameplay/InputEngine.h"
+#include "Application/Application.h"
+#include "Gameplay/Components/GUI/GuiPanel.h"
 
 void EnemyControl::RenderImGui()
 {
@@ -28,6 +34,8 @@ nlohmann::json EnemyControl::ToJson() const
 	};
 }
 
+using namespace Gameplay::Physics;
+
 EnemyControl::EnemyControl() :
 	IComponent(),
 	_impulse(10.0f)
@@ -40,9 +48,6 @@ EnemyControl::Sptr EnemyControl::FromJson(const nlohmann::json& blob)
 	result->_impulse = blob["impulse"];
 	return result;
 }
-
-extern float playerX, playerY;
-extern int ammoCount, playerHealth, bandageCount;
 
 EnemyControl::~EnemyControl() = default;
 
@@ -78,5 +83,27 @@ void EnemyControl::Update(float deltaTime)
 	GetGameObject()->SetPostion(Lerp(a, b, t));
 }
 
+void EnemyControl::OnTriggerVolumeEntered(const std::shared_ptr<RigidBody>& body)
+{
+
+	if (body->GetGameObject()->GetParent())
+	{
+		_CollideName = body->GetGameObject()->GetParent()->Name;
+	}
+	_CollideName = body->GetGameObject()->Name;
+
+	if (_CollideName == "Player")
+	{
+		if (GetGameObject()->GetScene()->FindObjectByName("Player")->GetPosition().z <= 2.8f)
+		{
+			GetGameObject()->GetScene()->FindObjectByName("Player")->Get<SimpleCameraControl>()->canMove = false;
+			GetGameObject()->GetScene()->FindObjectByName("You Lose Text")->Get<GuiPanel>()->IsEnabled = true;
+		}
+		else
+		{
+			GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		}
+	}
+}
 
 

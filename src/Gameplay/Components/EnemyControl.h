@@ -3,6 +3,8 @@
 #include "Gameplay/Components/IComponent.h"
 #include "Gameplay/Physics/RigidBody.h"
 #include "Gameplay/GameObject.h"
+#include "Gameplay/Physics/TriggerVolume.h"
+#include "Utils/TypeHelpers.h"
 
 // Utils
 #include "Utils/GUID.hpp"
@@ -31,7 +33,9 @@ public:
 	MAKE_TYPENAME(EnemyControl);
 	virtual nlohmann::json ToJson() const override;
 	static EnemyControl::Sptr FromJson(const nlohmann::json& blob);
-	float m_segmentTravelTime = 8.0f;
+	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& trigger);
+	float m_segmentTravelTime = 3.0f;
+	bool canMove = true;
 
 private:
 	size_t m_segmentIndex = 0;
@@ -41,5 +45,6 @@ protected:
 	float _timer = 0.0f;
 
 	float _playbackSpeed;
+	std::string _CollideName;
 };
 

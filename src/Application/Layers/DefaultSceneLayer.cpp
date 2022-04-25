@@ -396,9 +396,15 @@ void DefaultSceneLayer::_CreateScene()
 			RigidBody::Sptr physics = player->Add<RigidBody>(RigidBodyType::Dynamic);
 			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
 
+			TriggerVolume::Sptr triggerVolume = player->Add<TriggerVolume>();
+			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			triggerVolume->SetFlags(TriggerTypeFlags::Dynamics);
+
 			// Add some behaviour that relies on the physics body
 			player->Add<SimpleCameraControl>();
 			player->Add<JumpBehaviour>();
+
+
 		}
 		
 		GameObject::Sptr enemy = scene->CreateGameObject("Enemy");
@@ -411,6 +417,10 @@ void DefaultSceneLayer::_CreateScene()
 			RenderComponent::Sptr renderer = enemy->Add<RenderComponent>();
 			renderer->SetMesh(monkeyMesh);
 			renderer->SetMaterial(monkeyMaterial);
+
+			TriggerVolume::Sptr triggerVolume = enemy->Add<TriggerVolume>();
+			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
+			triggerVolume->SetFlags(TriggerTypeFlags::Dynamics);
 
 			RigidBody::Sptr physics = enemy->Add<RigidBody>(RigidBodyType::Dynamic);
 			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 1.0f)))->SetPosition({ 0,0,0 });
@@ -432,7 +442,7 @@ void DefaultSceneLayer::_CreateScene()
 
 		/////////////////////////// UI //////////////////////////////
 		
-		GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas"); 
+		/*GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas"); 
 		{
 			RectTransform::Sptr transform = canvas->Add<RectTransform>();
 			transform->SetMin({ 16, 16 });
@@ -461,7 +471,7 @@ void DefaultSceneLayer::_CreateScene()
 			}
 
 			canvas->AddChild(subPanel);
-		}
+		}*/
 		
 		GameObject::Sptr youWin = scene->CreateGameObject("You Win Text");
 		{
@@ -473,6 +483,21 @@ void DefaultSceneLayer::_CreateScene()
 			GuiPanel::Sptr panel = youWin->Add<GuiPanel>();
 			panel->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 			panel->SetTexture(youWinTex);
+
+			panel->IsEnabled = false;
+
+		}
+
+		GameObject::Sptr youLose = scene->CreateGameObject("You Lose Text");
+		{
+			RectTransform::Sptr transform = youLose->Add<RectTransform>();
+			transform->SetPosition({ 0, 0 });
+			transform->SetMin({ 192, 108 });
+			transform->SetMax({ 1920, 1080 });
+
+			GuiPanel::Sptr panel = youLose->Add<GuiPanel>();
+			panel->SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+			panel->SetTexture(youLoseTex);
 
 			panel->IsEnabled = false;
 

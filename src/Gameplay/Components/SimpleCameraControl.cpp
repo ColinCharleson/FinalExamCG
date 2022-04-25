@@ -6,7 +6,11 @@
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
 #include "Utils/JsonGlmHelpers.h"
+#include "Gameplay/Physics/RigidBody.h"
+#include "Gameplay/Physics/TriggerVolume.h"
 #include "Utils/ImGuiHelper.h"
+#include "Gameplay/Components/EnemyControl.h"
+#include "Gameplay/Physics/RigidBody.h"
 #include "Gameplay/InputEngine.h"
 #include "Application/Application.h"
 #include "Gameplay/Components/GUI/GuiPanel.h"
@@ -22,6 +26,7 @@ SimpleCameraControl::SimpleCameraControl() :
 }
 
 SimpleCameraControl::~SimpleCameraControl() = default;
+using namespace Gameplay::Physics;
 
 void SimpleCameraControl::Update(float deltaTime)
 {
@@ -39,7 +44,11 @@ void SimpleCameraControl::Update(float deltaTime)
 		canMove = false;
 		GetGameObject()->GetScene()->FindObjectByName("You Win Text")->Get<GuiPanel>()->IsEnabled = true;
 	}
+
+	
 }
+
+
 
 void SimpleCameraControl::RenderImGui()
 {
