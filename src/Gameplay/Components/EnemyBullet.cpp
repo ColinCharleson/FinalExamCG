@@ -117,6 +117,14 @@ void EnemyBullet::OnTriggerVolumeEntered(const std::shared_ptr<RigidBody>& body)
 
 		score++;
 	}
+	if (_CollideName == "plane")
+	{
+		readyFire = false;
+		_timer = 0;
+		GetGameObject()->SetPostion(a);
+
+		score++;
+	}
 }
 
 

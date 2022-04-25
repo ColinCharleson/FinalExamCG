@@ -9,7 +9,7 @@ ColorCorrectionEffect::ColorCorrectionEffect() :
 ColorCorrectionEffect::ColorCorrectionEffect(bool defaultLut) :
 	PostProcessingLayer::Effect(),
 	_shader(nullptr),
-	_strength(1.0f),
+	_strength(0.5f),
 	Lut(nullptr)
 {
 	Name = "Color Correction";
@@ -21,7 +21,7 @@ ColorCorrectionEffect::ColorCorrectionEffect(bool defaultLut) :
 	});
 
 	if (defaultLut) {
-		Lut = ResourceManager::CreateAsset<Texture3D>("luts/cool.cube");
+		Lut = ResourceManager::CreateAsset<Texture3D>("luts/Vibrant.CUBE");
 	}
 }
 

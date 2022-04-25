@@ -140,13 +140,15 @@ void DefaultSceneLayer::_CreateScene()
 
 		// Load in the meshes
 		MeshResource::Sptr humanMesh = ResourceManager::CreateAsset<MeshResource>("character.obj");
-		MeshResource::Sptr shipMesh   = ResourceManager::CreateAsset<MeshResource>("fenrir.obj");
+		MeshResource::Sptr turretMesh = ResourceManager::CreateAsset<MeshResource>("turret.obj");
+		MeshResource::Sptr ballMesh = ResourceManager::CreateAsset<MeshResource>("ball.obj");
 
 		// Load in some textures
 		Texture2D::Sptr    boxTexture   = ResourceManager::CreateAsset<Texture2D>("textures/BrickTexture.png");
 		Texture2D::Sptr    boxSpec      = ResourceManager::CreateAsset<Texture2D>("textures/box-specular.png");
 		Texture2D::Sptr    playerTex    = ResourceManager::CreateAsset<Texture2D>("textures/playerTexture.png");
-		Texture2D::Sptr    enemyTex    = ResourceManager::CreateAsset<Texture2D>("textures/enemyTexture.png");
+		Texture2D::Sptr    ballTex    = ResourceManager::CreateAsset<Texture2D>("textures/ballTexture.png");
+		Texture2D::Sptr    turretTex    = ResourceManager::CreateAsset<Texture2D>("textures/turretTexture.png");
 		Texture2D::Sptr    youWinTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouWin.png");
 		Texture2D::Sptr    youLoseTex	= ResourceManager::CreateAsset<Texture2D>("textures/YouLose.png");
 		Texture2D::Sptr    leafTex      = ResourceManager::CreateAsset<Texture2D>("textures/leaves.png");
@@ -225,21 +227,29 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		// This will be the reflective material, we'll make the whole thing 90% reflective
-		Material::Sptr playerMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		Material::Sptr playerMaterial = ResourceManager::CreateAsset<Material>(celShader);
 		{
 			playerMaterial->Name = "Player Mat";
 			playerMaterial->Set("u_Material.AlbedoMap", playerTex);
-			playerMaterial->Set("u_Material.EmissiveMap", playerTex);
 			playerMaterial->Set("u_Material.NormalMap", normalMapDefault);
-			playerMaterial->Set("u_Material.Shininess", 0.5f);
+			playerMaterial->Set("s_ToonTerm", toonLut);
+			playerMaterial->Set("u_Material.Shininess", 0.1f);
+			playerMaterial->Set("u_Material.Steps", 8);
 		}
-		Material::Sptr enemyMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		Material::Sptr ballMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
-			enemyMaterial->Name = "Enemy Mat";
-			enemyMaterial->Set("u_Material.AlbedoMap", enemyTex);
-			enemyMaterial->Set("u_Material.EmissiveMap", enemyTex);
-			enemyMaterial->Set("u_Material.NormalMap", normalMapDefault);
-			enemyMaterial->Set("u_Material.Shininess", 0.5f);
+			ballMaterial->Name = "Enemy Mat";
+			ballMaterial->Set("u_Material.AlbedoMap", ballTex);
+			ballMaterial->Set("u_Material.EmissiveMap", ballTex);
+			ballMaterial->Set("u_Material.NormalMap", normalMapDefault);
+			ballMaterial->Set("u_Material.Shininess", 0.8f);
+		}
+		Material::Sptr turretMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
+		{
+			turretMaterial->Name = "Enemy Mat";
+			turretMaterial->Set("u_Material.AlbedoMap", turretTex);
+			turretMaterial->Set("u_Material.NormalMap", normalMapDefault);
+			turretMaterial->Set("u_Material.Shininess", 0.3f);
 		}
 
 		// This will be the reflective material, we'll make the whole thing 50% reflective
@@ -393,7 +403,7 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		// Set up all our sample objects
-		GameObject::Sptr plane = scene->CreateGameObject("Plane");
+		GameObject::Sptr plane = scene->CreateGameObject("plane");
 		{
 			// Make a big tiled mesh
 			MeshResource::Sptr tiledMesh = ResourceManager::CreateAsset<MeshResource>();
@@ -435,31 +445,46 @@ void DefaultSceneLayer::_CreateScene()
 
 		}
 		
-		GameObject::Sptr enemy = scene->CreateGameObject("Enemy");
+		GameObject::Sptr ballBullet = scene->CreateGameObject("Enemy");
 		{
 			// Set position in the scene
-			enemy->SetPostion(glm::vec3(8.0f, 6.0f, 5.0f));
-			enemy->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+			ballBullet->SetPostion(glm::vec3(8.0f, 6.0f, 5.0f));
+			ballBullet->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 
 			// Create and attach a renderer for the monkey
-			RenderComponent::Sptr renderer = enemy->Add<RenderComponent>();
-			renderer->SetMesh(humanMesh);
-			renderer->SetMaterial(enemyMaterial);
+			RenderComponent::Sptr renderer = ballBullet->Add<RenderComponent>();
+			renderer->SetMesh(ballMesh);
+			renderer->SetMaterial(ballMaterial);
 
-			TriggerVolume::Sptr triggerVolume = enemy->Add<TriggerVolume>();
-			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(0.5f, 0.5f, 1.0f)))->SetPosition({ 0,0,0 });
+			TriggerVolume::Sptr triggerVolume = ballBullet->Add<TriggerVolume>();
+			triggerVolume->AddCollider(BoxCollider::Create(glm::vec3(0.3f, 0.3f, 0.3f)))->SetPosition({ 0,0,0 });
 			triggerVolume->SetFlags(TriggerTypeFlags::Dynamics);
 
 			// Add some behaviour that relies on the physics body
-			enemy->Add<EnemyBullet>();
+			ballBullet->Add<EnemyBullet>();
+		}
+
+		GameObject::Sptr turret = scene->CreateGameObject("turret");
+		{
+			// Set and rotation position in the scene
+			turret->SetPostion(glm::vec3(9.0f, 6.5f, 0.5f));
+			turret->SetRotation(glm::vec3(0.0f, 0.0f, -180.0f));
+			turret->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+
+			// Add a render component
+			RenderComponent::Sptr renderer = turret->Add<RenderComponent>();
+			renderer->SetMesh(turretMesh);
+			renderer->SetMaterial(turretMaterial);
+
+			RigidBody::Sptr physics = turret->Add<RigidBody>();
+			physics->AddCollider(BoxCollider::Create(glm::vec3(1.0f, 1.0f, 5.0f)))->SetPosition({ 0,0,0 });
 		}
 
 		GameObject::Sptr shadowCaster = scene->CreateGameObject("Shadow Light");
 		{
 			// Set position in the scene
-			shadowCaster->SetPostion(glm::vec3(3.0f, 3.0f, 5.0f));
-			shadowCaster->LookAt(glm::vec3(0.0f));
-
+			shadowCaster->SetPostion(glm::vec3(-3.5f, 3.8f, 10.0f));
+			shadowCaster->SetRotation(glm::vec3(8.9f, 0.0f, -48.0f));
 			// Create and attach a renderer for the monkey
 			ShadowCamera::Sptr shadowCam = shadowCaster->Add<ShadowCamera>();
 			shadowCam->SetProjection(glm::perspective(glm::radians(120.0f), 1.0f, 0.1f, 100.0f));
@@ -504,37 +529,55 @@ void DefaultSceneLayer::_CreateScene()
 			ParticleSystem::ParticleData emitter;
 			emitter.Type = ParticleType::SphereEmitter;
 			emitter.TexID = 2;
-			emitter.Position = glm::vec3(0.0f);
+			emitter.Position = glm::vec3(0.0f, 0.0f, -1.0f);
 			emitter.Color = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 			emitter.Lifetime = 0.0f;
 			emitter.SphereEmitterData.Timer = 1.0f / 50.0f;
 			emitter.SphereEmitterData.Velocity = 0.5f;
-			emitter.SphereEmitterData.LifeRange = { 1.0f, 4.0f };
+			emitter.SphereEmitterData.LifeRange = { 0.5f, 0.5f };
 			emitter.SphereEmitterData.Radius = 1.0f;
-			emitter.SphereEmitterData.SizeRange = { 0.5f, 1.5f };
+			emitter.SphereEmitterData.SizeRange = { 0.1f, 0.5f };
 
 			particleManager->AddEmitter(emitter);
 		}
+
 		{	// Enemy smoke particle
-			ParticleSystem::Sptr particleManager = enemy->Add<ParticleSystem>();
+			ParticleSystem::Sptr particleManager = ballBullet->Add<ParticleSystem>();
 			particleManager->Atlas = particleTex;
 
 			ParticleSystem::ParticleData emitter;
 			emitter.Type = ParticleType::SphereEmitter;
 			emitter.TexID = 2;
 			emitter.Position = glm::vec3(0.0f);
-			emitter.Color = glm::vec4(0.8f, 0.2f, 0.2f, 1.0f);
+			emitter.Color = glm::vec4(0.5f, 0.0f, 0.5f, 1.0f);
 			emitter.Lifetime = 0.0f;
 			emitter.SphereEmitterData.Timer = 1.0f / 50.0f;
 			emitter.SphereEmitterData.Velocity = 0.5f;
-			emitter.SphereEmitterData.LifeRange = { 1.0f, 4.0f };
-			emitter.SphereEmitterData.Radius = 1.0f;
+			emitter.SphereEmitterData.LifeRange = { 0.1f, 0.5f };
+			emitter.SphereEmitterData.Radius = 0.3f;
 			emitter.SphereEmitterData.SizeRange = { 0.5f, 1.5f };
 
 			particleManager->AddEmitter(emitter);
 		}
 		
+		{	// Turret smoke particle
+			ParticleSystem::Sptr particleManager = turret->Add<ParticleSystem>();
+			particleManager->Atlas = particleTex;
 
+			ParticleSystem::ParticleData emitter;
+			emitter.Type = ParticleType::SphereEmitter;
+			emitter.TexID = 3;
+			emitter.Position = glm::vec3(0.0f, 0.0f, 9.4f);
+			emitter.Color = glm::vec4(1.0f);
+			emitter.Lifetime = 0.0f;
+			emitter.SphereEmitterData.Timer = 1.0f / 1.0f;
+			emitter.SphereEmitterData.Velocity = 0.5f;
+			emitter.SphereEmitterData.LifeRange = { 0.5f, 0.5f };
+			emitter.SphereEmitterData.Radius = 0.7f;
+			emitter.SphereEmitterData.SizeRange = { 1.1f, 2.5f };
+
+			particleManager->AddEmitter(emitter);
+		}
 		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("textures/ui-sprite.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
 
